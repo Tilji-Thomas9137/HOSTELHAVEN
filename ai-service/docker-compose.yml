@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  ai-matching:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - FLASK_ENV=development
+      - HOSTEL_ID=default
+    volumes:
+      - .:/app
+    restart: unless-stopped
+

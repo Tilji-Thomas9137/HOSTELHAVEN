@@ -1,0 +1,122 @@
+'use client';
+import PropTypes from 'prop-types';
+
+// @mui
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+
+// @third-party
+import { motion } from 'motion/react';
+
+// @project
+import ButtonAnimationWrapper from '@/components/ButtonAnimationWrapper';
+import ContainerWrapper from '@/components/ContainerWrapper';
+import { GraphicsCard } from '@/components/cards';
+import { ProfileGroup } from '@/components/cards/profile-card';
+import SvgIcon from '@/components/SvgIcon';
+
+import { SECTION_COMMON_PY } from '@/utils/constant';
+
+// @assets
+import Arrow from '@/images/graphics/Arrow';
+
+/***************************  CALL TO ACTION - 4  ***************************/
+
+/**
+ *
+ * Demos:
+ * - [CTA4](https://www.saasable.io/blocks/cta/cta4)
+ *
+ * API:
+ * - [CTA4 API](https://phoenixcoded.gitbook.io/saasable/ui-kit/development/components/cta/cta4#props-details)
+ */
+
+export default function Cta4({ headLine, primaryBtn, profileGroups, list, clientContent }) {
+  const transformValues = { xs: 'rotate(45deg)', sm: 'rotate(320deg)', md: 'unset' };
+
+  return (
+    <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
+      <GraphicsCard>
+        <Box sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
+          <Grid container spacing={{ xs: 5, sm: 0, md: 3 }} sx={{ alignItems: 'flex-end' }}>
+            <Grid size={{ xs: 12, sm: 9, md: 8 }}>
+              <Stack sx={{ gap: 5 }}>
+                <ProfileGroup {...profileGroups} />
+                <Stack sx={{ gap: { xs: 2, sm: 5 } }}>
+                  {typeof headLine === 'string' ? <Typography variant="h2">{headLine}</Typography> : headLine}
+                  {list && (
+                    <Stack direction={{ sm: 'row' }} sx={{ columnGap: { xs: 1, sm: 3 }, rowGap: 1, flexWrap: 'wrap' }}>
+                      {list.map((item, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -30 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.2, ease: 'easeInOut', delay: index * 0.6 }}
+                        >
+                          <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+                            <SvgIcon name="tabler-rosette-discount-check" color="text.secondary" stroke={1} />
+                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                              {item.primary}
+                            </Typography>
+                          </Stack>
+                        </motion.div>
+                      ))}
+                    </Stack>
+                  )}
+                </Stack>
+              </Stack>
+            </Grid>
+            <Grid sx={{ position: 'relative', pl: { md: 3 }, pt: { md: 3 } }} size={{ sm: 3, md: 4 }}>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: { xs: -36, sm: -98, md: -68 },
+                  right: { xs: -70, sm: 40, md: 100 },
+                  transform: transformValues
+                }}
+              >
+                <Arrow />
+              </Box>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: 'primary.main',
+                  width: 94,
+                  position: 'absolute',
+                  top: { xs: 6, sm: -160, md: -82 },
+                  right: { xs: -160, sm: 0 }
+                }}
+              >
+                {clientContent}
+              </Typography>
+              <Box sx={{ textAlign: 'right' }}>
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: [1, 1.05, 1] }}
+                  transition={{ duration: 1.1, delay: 0.1, ease: 'easeInOut', repeat: Infinity }}
+                  whileHover={{ scale: 1, transition: { duration: 0.3 } }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ButtonAnimationWrapper>
+                    <Button color="primary" size="large" variant="contained" sx={{ minWidth: { md: 263 } }} {...primaryBtn} />
+                  </ButtonAnimationWrapper>
+                </motion.div>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      </GraphicsCard>
+    </ContainerWrapper>
+  );
+}
+
+Cta4.propTypes = {
+  headLine: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  primaryBtn: PropTypes.any,
+  profileGroups: PropTypes.object,
+  list: PropTypes.array,
+  clientContent: PropTypes.string
+};

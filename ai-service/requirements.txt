@@ -1,0 +1,8 @@
+# Core dependencies compatible with Python 3.13
+setuptools>=69.0.0
+wheel>=0.43.0
+Flask>=3.0.0
+flask-cors>=4.0.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+python-dotenv>=1.0.0
