@@ -36,7 +36,7 @@ yarn-error.log*
 
 # Node/Express
 backend/node_modules/
-backend/.env
+
 
 # React/Vite
 admin/vite/node_modules/
