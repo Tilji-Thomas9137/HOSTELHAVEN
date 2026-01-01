@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = '/api';
+
+
 
 // Create axios instance
 const api = axios.create({
@@ -34,15 +36,15 @@ api.interceptors.response.use(
 
     // Don't try to refresh token for auth endpoints (login, refresh-token, etc.)
     // These endpoints don't require authentication and shouldn't trigger refresh logic
-    const isAuthEndpoint = originalRequest.url?.includes('/auth/login') || 
-                          originalRequest.url?.includes('/auth/refresh-token') ||
-                          originalRequest.url?.includes('/auth/logout');
-    
+    const isAuthEndpoint = originalRequest.url?.includes('/auth/login') ||
+      originalRequest.url?.includes('/auth/refresh-token') ||
+      originalRequest.url?.includes('/auth/logout');
+
     // Suppress 401 errors for notification endpoints when user is not authenticated
     // This happens when Notification component tries to fetch on login page
     const isNotificationEndpoint = originalRequest.url?.includes('/notifications');
     const isUnauthenticated = !localStorage.getItem('hostelhaven_token');
-    
+
     if (error.response?.status === 401 && isNotificationEndpoint && isUnauthenticated) {
       // Silently fail - user is not logged in, so notifications can't be fetched
       error._suppressError = true;
@@ -51,8 +53,8 @@ api.interceptors.response.use(
 
     // Suppress room allocation error toasts and console logs
     // Mark the error so components know not to show toast for this specific error
-    if (error.response?.status === 403 && 
-        error.response?.data?.message?.includes('room is allocated')) {
+    if (error.response?.status === 403 &&
+      error.response?.data?.message?.includes('room is allocated')) {
       // Set flags to prevent duplicate toasts and console errors
       originalRequest._suppressToast = true;
       originalRequest._suppressConsoleError = true;
@@ -86,16 +88,16 @@ api.interceptors.response.use(
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('showAuthError', 'true');
         }
-        
+
         // Clear auth - but ProtectedRoute will check the flag before redirecting
         localStorage.removeItem('hostelhaven_token');
         localStorage.removeItem('hostelhaven_refresh_token');
         localStorage.removeItem('hostelhaven_user');
-        
+
         // Don't redirect here - let the error propagate to the component
         // The component will show the error, and ProtectedRoute will handle redirect
         // This allows users to see what went wrong before being redirected
-        
+
         return Promise.reject(refreshError);
       }
     }

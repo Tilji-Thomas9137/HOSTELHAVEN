@@ -11,26 +11,29 @@ import LandingPageWrapper from '@/components/LandingPageWrapper';
 
 const router = createBrowserRouter(
   [
-    // IMPORTANT: Root route must be first - this is the landing/index page
-    // Shows landing page for unauthenticated users, redirects authenticated users to dashboard
+    // Landing / Home
     { path: '/', element: <LandingPageWrapper /> },
     { path: '/index', element: <Navigate to="/" replace /> },
     { path: '/home', element: <Navigate to="/" replace /> },
-    // Redirect old paths to new app/* paths for backward compatibility
-    { path: '/dashboard', element: <Navigate to="/app/dashboard" replace /> },
-    { path: '/students', element: <Navigate to="/app/students" replace /> },
-    { path: '/rooms', element: <Navigate to="/app/rooms" replace /> },
-    { path: '/bookings', element: <Navigate to="/app/bookings" replace /> },
-    { path: '/payments', element: <Navigate to="/app/payments" replace /> },
-    { path: '/reports', element: <Navigate to="/app/reports" replace /> },
-    { path: '/settings', element: <Navigate to="/app/settings" replace /> },
-    // Auth routes (login) - only accessible to unauthenticated users
+
+    // Backward compatibility redirects (NO /app)
+    { path: '/dashboard', element: <Navigate to="/dashboard" replace /> },
+    { path: '/students', element: <Navigate to="/students" replace /> },
+    { path: '/rooms', element: <Navigate to="/rooms" replace /> },
+    { path: '/bookings', element: <Navigate to="/bookings" replace /> },
+    { path: '/payments', element: <Navigate to="/payments" replace /> },
+    { path: '/reports', element: <Navigate to="/reports" replace /> },
+    { path: '/settings', element: <Navigate to="/settings" replace /> },
+
+    // Auth routes (login, register, etc.)
     PagesRoutes,
-    // Protected app routes (dashboard, etc.) - only accessible to authenticated users
+
+    // Protected app routes (dashboard, students, etc.)
     MainRoutes
   ],
   {
-    basename: import.meta.env.VITE_APP_BASE_URL || undefined,
+    // IMPORTANT FOR S3
+    basename: '/',
     future: {
       v7_relativeSplatPath: true,
       v7_fetcherPersist: true,

@@ -1,6 +1,12 @@
 /***************************  THEME CONSTANT  ***************************/
 
-export const APP_DEFAULT_PATH = '/app/dashboard';
+/**
+ * Default route for the application
+ * IMPORTANT:
+ * Use '/' for S3 / CloudFront static hosting
+ * (S3 cannot resolve deep links like /dashboard)
+ */
+export const APP_DEFAULT_PATH = '/';
 
 export const DRAWER_WIDTH = 254;
 export const MINI_DRAWER_WIDTH = 76 + 1; // 1px - for right-side border
@@ -8,26 +14,22 @@ export const MINI_DRAWER_WIDTH = 76 + 1; // 1px - for right-side border
 /***************************  THEME ENUM  ***************************/
 
 export let Themes;
-
 (function (Themes) {
   Themes['THEME_HOSTING'] = 'hosting';
 })(Themes || (Themes = {}));
 
 export let ThemeMode;
-
 (function (ThemeMode) {
   ThemeMode['LIGHT'] = 'light';
   ThemeMode['DARK'] = 'dark';
 })(ThemeMode || (ThemeMode = {}));
 
 export let ThemeDirection;
-
 (function (ThemeDirection) {
   ThemeDirection['LTR'] = 'ltr';
 })(ThemeDirection || (ThemeDirection = {}));
 
 export let ThemeI18n;
-
 (function (ThemeI18n) {
   ThemeI18n['EN'] = 'en';
   ThemeI18n['FR'] = 'fr';
@@ -36,7 +38,6 @@ export let ThemeI18n;
 })(ThemeI18n || (ThemeI18n = {}));
 
 export let ThemeFonts;
-
 (function (ThemeFonts) {
   ThemeFonts['FONT_ARCHIVO'] = "'Archivo', sans-serif";
 })(ThemeFonts || (ThemeFonts = {}));

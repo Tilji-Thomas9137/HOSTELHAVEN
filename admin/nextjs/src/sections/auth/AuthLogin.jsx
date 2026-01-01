@@ -1,13 +1,15 @@
 'use client';
+
 import PropTypes from 'prop-types';
 
-// @next
+// Next.js
 import NextLink from 'next/link';
 import { useRouter } from 'next/navigation';
 
+// React
 import { useState } from 'react';
 
-// @mui
+// MUI
 import { useTheme } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -20,28 +22,18 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 
-// @third-party
+// Third-party
 import { useForm } from 'react-hook-form';
 
-// @project
+// Project
 import { APP_DEFAULT_PATH } from '@/config';
 import { emailSchema, passwordSchema } from '@/utils/validation-schema/common';
+import api from '@/config/api'; // ✅ use api helper, NOT axios
 
-// @icons
+// Icons
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 
-// Mock user credentials
-const userCredentials = [
-  { title: 'Super Admin', email: 'super_admin@saasable.io', password: 'Super@123' },
-  { title: 'Admin', email: 'admin@saasable.io', password: 'Admin@123' },
-  { title: 'User', email: 'user@saasable.io', password: 'User@123' }
-];
-
-function isChildObjectContained(parent, child) {
-  return Object.entries(child).every(([key, value]) => parent.hasOwnProperty(key) && parent[key] === value);
-}
-
-/***************************  AUTH - LOGIN  ***************************/
+/*************************** AUTH LOGIN ***************************/
 
 export default function AuthLogin({ inputSx }) {
   const router = useRouter();
@@ -51,108 +43,124 @@ export default function AuthLogin({ inputSx }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  // Initialize react-hook-form
   const {
     register,
-    watch,
     handleSubmit,
-    reset,
     formState: { errors }
-  } = useForm({ defaultValues: { email: 'super_admin@saasable.io', password: 'Super@123' } });
+  } = useForm({
+    defaultValues: { email: '', password: '' }
+  });
 
-  const formData = watch();
+  // ✅ FIXED onSubmit
+  const onSubmit = async (formData) => {
+    try {
+      setIsProcessing(true);
+      setLoginError('');
 
-  // Handle form submission
-  const onSubmit = (formData) => {
-    setIsProcessing(true);
-    setLoginError('');
+      const response = await api.post('/auth/login', {
+        username: formData.email, // or 'email' if backend expects email
+        password: formData.password,
+      });
 
-    router.push(APP_DEFAULT_PATH);
+      const { token, refreshToken, user } = response.data;
+
+      localStorage.setItem('hostelhaven_token', token);
+      localStorage.setItem('hostelhaven_refresh_token', refreshToken);
+      localStorage.setItem('hostelhaven_user', JSON.stringify(user));
+
+      router.push(APP_DEFAULT_PATH);
+    } catch (error) {
+      setLoginError(
+        error.response?.data?.message || 'Cannot connect to server'
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const commonIconProps = { size: 16, color: theme.palette.grey[700] };
 
   return (
-    <>
-      <Stack direction="row" sx={{ gap: 1, mb: 2 }}>
-        {userCredentials.map((credential) => (
-          <Button
-            key={credential.title}
-            variant="outlined"
-            color={isChildObjectContained(credential, formData) ? 'primary' : 'secondary'}
-            sx={{ flex: 1 }}
-            onClick={() => {
-              reset({ email: credential.email, password: credential.password });
-            }}
-          >
-            {credential.title}
-          </Button>
-        ))}
-      </Stack>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={2}>
-          <Box>
-            <InputLabel>Email</InputLabel>
-            <OutlinedInput
-              {...register('email', emailSchema)}
-              placeholder="example@saasable.io"
-              fullWidth
-              error={Boolean(errors.email)}
-              sx={inputSx}
-            />
-            {errors.email?.message && <FormHelperText error>{errors.email.message}</FormHelperText>}
-          </Box>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack gap={2}>
+        {/* Email Field */}
+        <Box>
+          <InputLabel>Email</InputLabel>
+          <OutlinedInput
+            {...register('email', emailSchema)}
+            placeholder="Enter email"
+            fullWidth
+            error={Boolean(errors.email)}
+            sx={inputSx}
+          />
+          {errors.email?.message && (
+            <FormHelperText error>{errors.email.message}</FormHelperText>
+          )}
+        </Box>
 
-          <Box>
-            <InputLabel>Password</InputLabel>
-            <OutlinedInput
-              {...register('password', passwordSchema)}
-              type={isPasswordVisible ? 'text' : 'password'}
-              placeholder="Enter your password"
-              fullWidth
-              error={Boolean(errors.password)}
-              endAdornment={
-                <InputAdornment position="end" sx={{ cursor: 'pointer' }} onClick={() => setIsPasswordVisible(!isPasswordVisible)}>
-                  {isPasswordVisible ? <IconEye {...commonIconProps} /> : <IconEyeOff {...commonIconProps} />}
-                </InputAdornment>
-              }
-              sx={inputSx}
-            />
-            <Stack direction="row" alignItems="center" justifyContent={errors.password ? 'space-between' : 'flex-end'} width={1}>
-              {errors.password?.message && <FormHelperText error>{errors.password.message}</FormHelperText>}
-              <Link
-                component={NextLink}
-                underline="hover"
-                variant="caption"
-                href="#"
-                textAlign="right"
-                sx={{ '&:hover': { color: 'primary.dark' }, mt: 0.75 }}
+        {/* Password Field */}
+        <Box>
+          <InputLabel>Password</InputLabel>
+          <OutlinedInput
+            {...register('password', passwordSchema)}
+            type={isPasswordVisible ? 'text' : 'password'}
+            placeholder="Enter password"
+            fullWidth
+            error={Boolean(errors.password)}
+            endAdornment={
+              <InputAdornment
+                position="end"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
               >
-                Forgot Password?
-              </Link>
-            </Stack>
-          </Box>
-        </Stack>
+                {isPasswordVisible ? (
+                  <IconEye {...commonIconProps} />
+                ) : (
+                  <IconEyeOff {...commonIconProps} />
+                )}
+              </InputAdornment>
+            }
+            sx={inputSx}
+          />
+          {errors.password?.message && (
+            <FormHelperText error>{errors.password.message}</FormHelperText>
+          )}
+        </Box>
 
+        {/* Submit Button */}
         <Button
           type="submit"
-          color="primary"
           variant="contained"
           disabled={isProcessing}
-          endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
-          sx={{ minWidth: 120, mt: { xs: 1, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}
+          endIcon={
+            isProcessing && <CircularProgress color="secondary" size={16} />
+          }
         >
           Sign In
         </Button>
 
+        {/* Error Alert */}
         {loginError && (
-          <Alert sx={{ mt: 2 }} severity="error" variant="filled" icon={false}>
+          <Alert severity="error" variant="filled">
             {loginError}
           </Alert>
         )}
-      </form>
-    </>
+
+        {/* Forgot Password Link */}
+        <Link
+          component={NextLink}
+          underline="hover"
+          variant="caption"
+          href="#"
+          textAlign="center"
+        >
+          Forgot Password?
+        </Link>
+      </Stack>
+    </form>
   );
 }
 
-AuthLogin.propTypes = { inputSx: PropTypes.any };
+AuthLogin.propTypes = {
+  inputSx: PropTypes.any
+};
