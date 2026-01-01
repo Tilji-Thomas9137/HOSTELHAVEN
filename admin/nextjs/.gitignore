@@ -38,6 +38,7 @@ yarn-error.log*
 backend/node_modules/
 backend/.env
 
+
 # React/Vite
 admin/vite/node_modules/
 admin/vite/dist/
